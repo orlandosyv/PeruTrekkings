@@ -15,7 +15,7 @@ builder.Services.AddDbContext<PeruTrekkingsDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("PeruTrekkingsConnectionString"))
     );
-builder.Services.AddScoped<IRegionReposity, SQLRegionReposity>();
+builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

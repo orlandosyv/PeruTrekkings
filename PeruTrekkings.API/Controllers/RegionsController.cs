@@ -16,12 +16,12 @@ namespace PeruTrekkings.API.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly PeruTrekkingsDbContext dbContext;
-        private readonly IRegionReposity regionReposity;
+        private readonly IRegionRepository regionRepository;
 
-        public RegionsController(PeruTrekkingsDbContext dbContext, IRegionReposity regionReposity)
+        public RegionsController(PeruTrekkingsDbContext dbContext, IRegionRepository regionReposity)
         {
             this.dbContext = dbContext;
-            this.regionReposity = regionReposity;
+            this.regionRepository = regionReposity;
         }
 
         //GetAll 
@@ -30,7 +30,7 @@ namespace PeruTrekkings.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             //Get data from DB
-            var regionsDomain = await regionReposity.GetAllAsync();
+            var regionsDomain = await regionRepository.GetAllAsync();
             //Map Domain Models To DTOs
             var regionsDTO = new List<RegionDTO>();
             foreach (var region in regionsDomain)
@@ -53,7 +53,7 @@ namespace PeruTrekkings.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute]Guid id)
         {
-            var regionModel = await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
+            var regionModel = await regionRepository.GetByIdAsync(id);
             if (regionModel == null) { return NotFound(); }
 
             //map - convert our modelDomain to modelDto
@@ -80,9 +80,8 @@ namespace PeruTrekkings.API.Controllers
                 Name = addRegionDTO.Name,
             };
 
-            //use Domain model to create region
-            await dbContext.Regions.AddAsync(regionModel);
-            await dbContext.SaveChangesAsync(); //executes the changes and saves in DB
+            //use Domain model to create region            
+            regionModel = await regionRepository.CreateAsync(regionModel);            
 
             //map
             var regionDTO = new RegionDTO
@@ -101,7 +100,16 @@ namespace PeruTrekkings.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionDTO updateRegionDTO) 
         {
-            var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            //Map region to DTO Model
+            var regionModel = new Region
+            {
+                Code = updateRegionDTO.Code,
+                Name = updateRegionDTO.Name,
+                RegionImageUrl = updateRegionDTO.RegionImageUrl,
+            };
+
+            regionModel = await regionRepository.UpdateAsync(id, regionModel);
+            //var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (regionModel == null) { return NotFound(); }
 
             //map
@@ -128,13 +136,8 @@ namespace PeruTrekkings.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute]Guid id) 
         {
-            var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
-            if (regionModel == null) { return NotFound(); }
-
-            //Remove region
-            dbContext.Regions.Remove(regionModel);
-            await dbContext.SaveChangesAsync();
-
+            var regionModel = await regionRepository.DeleteAsync(id);
+            if (regionModel == null) { return NotFound(); }            
 
             //return deleted region, map regionModel to a new regionDTO
             var regionDTO = new RegionDTO
