@@ -20,7 +20,7 @@ namespace PeruTrekkings.API.Controllers
         //GetAll 
         //GET: https://localhost:{portnumber}/api/regions
         [HttpGet]
-        public IActionResult GetAll() 
+        public IActionResult GetAll()
         {
             //Get data from DB
             var regionsDomain = dbContext.Regions.ToList();
@@ -38,7 +38,7 @@ namespace PeruTrekkings.API.Controllers
             }
 
             //Return DTO
-            return Ok(regionsDTO);            
+            return Ok(regionsDTO);
         }
 
         //Get single Region
@@ -46,16 +46,16 @@ namespace PeruTrekkings.API.Controllers
         [Route("{id:Guid}")]
         public IActionResult GetById(Guid id)
         {
-            var regionDomain = dbContext.Regions.FirstOrDefault(r => r.Id == id);
-            if (regionDomain == null) { return NotFound(); }
+            var regionModel = dbContext.Regions.FirstOrDefault(r => r.Id == id);
+            if (regionModel == null) { return NotFound(); }
 
             //map - convert our modelDomain to modelDto
             var regionDto = new RegionDTO()
             {
-                Id = regionDomain.Id,
-                Name = regionDomain.Name,
-                Code = regionDomain.Code,
-                RegionImageUrl = regionDomain.RegionImageUrl,
+                Id = regionModel.Id,
+                Name = regionModel.Name,
+                Code = regionModel.Code,
+                RegionImageUrl = regionModel.RegionImageUrl,
             };
 
             return Ok(regionDto);
@@ -63,7 +63,7 @@ namespace PeruTrekkings.API.Controllers
 
         //Post to create a new region
         [HttpPost]
-        public IActionResult Create([FromBody] AddRegionDTO addRegionDTO) 
+        public IActionResult Create([FromBody] AddRegionDTO addRegionDTO)
         {
             //Convert DTO to model
             var regionModel = new Region
@@ -87,6 +87,33 @@ namespace PeruTrekkings.API.Controllers
             };
 
             return CreatedAtAction(nameof(GetById), new { id = regionModel.Id }, regionDTO);
+        }
+
+        //Update
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public IActionResult Update([FromRoute]Guid id, [FromBody] UpdateRegionDTO updateRegionDTO) 
+        {
+            var regionModel = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            if (regionModel == null) { return NotFound(); }
+
+            //map
+            regionModel.Code = updateRegionDTO.Code;
+            regionModel.Name = updateRegionDTO.Name;
+            regionModel.RegionImageUrl = updateRegionDTO.RegionImageUrl;
+            
+            dbContext.SaveChanges();
+
+            //convert regionModel to regionDTO
+            var regionDTO = new RegionDTO
+            {
+                Id = regionModel.Id,
+                Name = regionModel.Name,
+                Code = regionModel.Code,
+                RegionImageUrl = regionModel.RegionImageUrl,
+            };
+
+            return Ok(regionDTO);
         }
     }
 }
