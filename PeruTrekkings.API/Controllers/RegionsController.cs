@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,14 @@ namespace PeruTrekkings.API.Controllers
     {
         private readonly PeruTrekkingsDbContext dbContext;
         private readonly IRegionRepository regionRepository;
+        private readonly IMapper mapper;
 
-        public RegionsController(PeruTrekkingsDbContext dbContext, IRegionRepository regionReposity)
+        public RegionsController(PeruTrekkingsDbContext dbContext, IRegionRepository regionReposity,
+            IMapper mapper)
         {
             this.dbContext = dbContext;
             this.regionRepository = regionReposity;
+            this.mapper = mapper;
         }
 
         //GetAll 
@@ -32,18 +36,19 @@ namespace PeruTrekkings.API.Controllers
             //Get data from DB
             var regionsDomain = await regionRepository.GetAllAsync();
             //Map Domain Models To DTOs
-            var regionsDTO = new List<RegionDTO>();
-            foreach (var region in regionsDomain)
-            {
-                regionsDTO.Add(new RegionDTO()
-                {
-                    Id = region.Id,
-                    Name = region.Name,
-                    Code = region.Code,
-                    RegionImageUrl = region.RegionImageUrl,
-                });
-            }
 
+            //var regionsDTO = new List<RegionDTO>();
+            //foreach (var region in regionsDomain)
+            //{
+            //    regionsDTO.Add(new RegionDTO()
+            //    {
+            //        Id = region.Id,
+            //        Name = region.Name,
+            //        Code = region.Code,
+            //        RegionImageUrl = region.RegionImageUrl,
+            //    });
+            //}
+            var regionsDTO = mapper.Map<List<RegionDTO>>(regionsDomain);
             //Return DTO
             return Ok(regionsDTO);
         }
@@ -57,40 +62,42 @@ namespace PeruTrekkings.API.Controllers
             if (regionModel == null) { return NotFound(); }
 
             //map - convert our modelDomain to modelDto
-            var regionDto = new RegionDTO()
-            {
-                Id = regionModel.Id,
-                Name = regionModel.Name,
-                Code = regionModel.Code,
-                RegionImageUrl = regionModel.RegionImageUrl,
-            };
+            //var regionDto = new RegionDTO()
+            //{
+            //    Id = regionModel.Id,
+            //    Name = regionModel.Name,
+            //    Code = regionModel.Code,
+            //    RegionImageUrl = regionModel.RegionImageUrl,
+            //};
 
-            return Ok(regionDto);
+            return Ok(mapper.Map<RegionDTO>(regionModel));
         }
 
         //Post to create a new region
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddRegionDTO addRegionDTO)
         {
-            //Convert DTO to model
-            var regionModel = new Region
-            {
-                Code = addRegionDTO.Code,
-                RegionImageUrl = addRegionDTO.RegionImageUrl,
-                Name = addRegionDTO.Name,
-            };
+            //Map or Convert DTO to model
+            var regionModel = mapper.Map<Region>(addRegionDTO);
+            //var regionModel = new Region
+            //{
+            //    Code = addRegionDTO.Code,
+            //    RegionImageUrl = addRegionDTO.RegionImageUrl,
+            //    Name = addRegionDTO.Name,
+            //};
 
             //use Domain model to create region            
             regionModel = await regionRepository.CreateAsync(regionModel);            
 
             //map
-            var regionDTO = new RegionDTO
-            {
-                Id = regionModel.Id,
-                Name = regionModel.Name,
-                Code = regionModel.Code,
-                RegionImageUrl = regionModel.RegionImageUrl,
-            };
+            //var regionDTO = new RegionDTO
+            //{
+            //    Id = regionModel.Id,
+            //    Name = regionModel.Name,
+            //    Code = regionModel.Code,
+            //    RegionImageUrl = regionModel.RegionImageUrl,
+            //};
+            var regionDTO = mapper.Map<RegionDTO>(regionModel);
 
             return CreatedAtAction(nameof(GetById), new { id = regionModel.Id }, regionDTO);
         }
@@ -101,32 +108,33 @@ namespace PeruTrekkings.API.Controllers
         public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionDTO updateRegionDTO) 
         {
             //Map region to DTO Model
-            var regionModel = new Region
-            {
-                Code = updateRegionDTO.Code,
-                Name = updateRegionDTO.Name,
-                RegionImageUrl = updateRegionDTO.RegionImageUrl,
-            };
+            var regionModel = mapper.Map<Region>(updateRegionDTO);
+            //var regionModel = new Region
+            //{
+            //    Code = updateRegionDTO.Code,
+            //    Name = updateRegionDTO.Name,
+            //    RegionImageUrl = updateRegionDTO.RegionImageUrl,
+            //};
 
             regionModel = await regionRepository.UpdateAsync(id, regionModel);
             //var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (regionModel == null) { return NotFound(); }
 
-            //map
-            regionModel.Code = updateRegionDTO.Code;
-            regionModel.Name = updateRegionDTO.Name;
-            regionModel.RegionImageUrl = updateRegionDTO.RegionImageUrl;
-            
-            await dbContext.SaveChangesAsync();
+            //map            
+            //regionModel.Code = updateRegionDTO.Code;
+            //regionModel.Name = updateRegionDTO.Name;
+            //regionModel.RegionImageUrl = updateRegionDTO.RegionImageUrl;            
+            //await dbContext.SaveChangesAsync();
 
             //convert regionModel to regionDTO
-            var regionDTO = new RegionDTO
-            {
-                Id = regionModel.Id,
-                Name = regionModel.Name,
-                Code = regionModel.Code,
-                RegionImageUrl = regionModel.RegionImageUrl,
-            };
+            var regionDTO = mapper.Map<RegionDTO> (regionModel);
+            //var regionDTO = new RegionDTO
+            //{
+            //    Id = regionModel.Id,
+            //    Name = regionModel.Name,
+            //    Code = regionModel.Code,
+            //    RegionImageUrl = regionModel.RegionImageUrl,
+            //};
 
             return Ok(regionDTO);
         }
@@ -140,15 +148,15 @@ namespace PeruTrekkings.API.Controllers
             if (regionModel == null) { return NotFound(); }            
 
             //return deleted region, map regionModel to a new regionDTO
-            var regionDTO = new RegionDTO
-            {
-                Id = regionModel.Id,
-                Name = regionModel.Name,
-                Code = regionModel.Code,
-                RegionImageUrl = regionModel.RegionImageUrl,
-            };
+            //var regionDTO = new RegionDTO
+            //{
+            //    Id = regionModel.Id,
+            //    Name = regionModel.Name,
+            //    Code = regionModel.Code,
+            //    RegionImageUrl = regionModel.RegionImageUrl,
+            //};
 
-            return Ok(regionDTO);
+            return Ok(mapper.Map<RegionDTO>(regionModel));
         }
     }
 }

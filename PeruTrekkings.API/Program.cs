@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PeruTrekkings.API.Data;
+using PeruTrekkings.API.Mappings;
 using PeruTrekkings.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddDbContext<PeruTrekkingsDbContext>(options =>
         builder.Configuration.GetConnectionString("PeruTrekkingsConnectionString"))
     );
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
