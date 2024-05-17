@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using PeruTrekkings.API.Data;
 using PeruTrekkings.API.Models.Domain;
 using PeruTrekkings.API.Models.DTO;
+using System.Runtime.CompilerServices;
 
 namespace PeruTrekkings.API.Controllers
 {
@@ -21,10 +23,10 @@ namespace PeruTrekkings.API.Controllers
         //GetAll 
         //GET: https://localhost:{portnumber}/api/regions
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             //Get data from DB
-            var regionsDomain = dbContext.Regions.ToList();
+            var regionsDomain = await dbContext.Regions.ToListAsync();
             //Map Domain Models To DTOs
             var regionsDTO = new List<RegionDTO>();
             foreach (var region in regionsDomain)
@@ -45,9 +47,9 @@ namespace PeruTrekkings.API.Controllers
         //Get single Region
         [HttpGet]
         [Route("{id:Guid}")]
-        public IActionResult GetById(Guid id)
+        public async Task<IActionResult> GetById([FromRoute]Guid id)
         {
-            var regionModel = dbContext.Regions.FirstOrDefault(r => r.Id == id);
+            var regionModel = await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
             if (regionModel == null) { return NotFound(); }
 
             //map - convert our modelDomain to modelDto
@@ -64,7 +66,7 @@ namespace PeruTrekkings.API.Controllers
 
         //Post to create a new region
         [HttpPost]
-        public IActionResult Create([FromBody] AddRegionDTO addRegionDTO)
+        public async Task<IActionResult> Create([FromBody] AddRegionDTO addRegionDTO)
         {
             //Convert DTO to model
             var regionModel = new Region
@@ -75,8 +77,8 @@ namespace PeruTrekkings.API.Controllers
             };
 
             //use Domain model to create region
-            dbContext.Regions.Add(regionModel);
-            dbContext.SaveChanges(); //executes the changes and saves in DB
+            await dbContext.Regions.AddAsync(regionModel);
+            await dbContext.SaveChangesAsync(); //executes the changes and saves in DB
 
             //map
             var regionDTO = new RegionDTO
@@ -93,9 +95,9 @@ namespace PeruTrekkings.API.Controllers
         //Update
         [HttpPut]
         [Route("{id:Guid}")]
-        public IActionResult Update([FromRoute]Guid id, [FromBody] UpdateRegionDTO updateRegionDTO) 
+        public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionDTO updateRegionDTO) 
         {
-            var regionModel = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (regionModel == null) { return NotFound(); }
 
             //map
@@ -103,7 +105,7 @@ namespace PeruTrekkings.API.Controllers
             regionModel.Name = updateRegionDTO.Name;
             regionModel.RegionImageUrl = updateRegionDTO.RegionImageUrl;
             
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             //convert regionModel to regionDTO
             var regionDTO = new RegionDTO
@@ -120,14 +122,14 @@ namespace PeruTrekkings.API.Controllers
         //DELETE
         [HttpDelete]
         [Route("{id:Guid}")]
-        public IActionResult Delete([FromRoute]Guid id) 
+        public async Task<IActionResult> Delete([FromRoute]Guid id) 
         {
-            var regionModel = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (regionModel == null) { return NotFound(); }
 
             //Remove region
             dbContext.Regions.Remove(regionModel);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
 
             //return deleted region, map regionModel to a new regionDTO
