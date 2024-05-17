@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using PeruTrekkings.API.Data;
@@ -105,6 +106,31 @@ namespace PeruTrekkings.API.Controllers
             dbContext.SaveChanges();
 
             //convert regionModel to regionDTO
+            var regionDTO = new RegionDTO
+            {
+                Id = regionModel.Id,
+                Name = regionModel.Name,
+                Code = regionModel.Code,
+                RegionImageUrl = regionModel.RegionImageUrl,
+            };
+
+            return Ok(regionDTO);
+        }
+
+        //DELETE
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public IActionResult Delete([FromRoute]Guid id) 
+        {
+            var regionModel = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            if (regionModel == null) { return NotFound(); }
+
+            //Remove region
+            dbContext.Regions.Remove(regionModel);
+            dbContext.SaveChanges();
+
+
+            //return deleted region, map regionModel to a new regionDTO
             var regionDTO = new RegionDTO
             {
                 Id = regionModel.Id,
