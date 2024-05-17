@@ -6,6 +6,7 @@ using Microsoft.Identity.Client;
 using PeruTrekkings.API.Data;
 using PeruTrekkings.API.Models.Domain;
 using PeruTrekkings.API.Models.DTO;
+using PeruTrekkings.API.Repositories;
 using System.Runtime.CompilerServices;
 
 namespace PeruTrekkings.API.Controllers
@@ -15,9 +16,12 @@ namespace PeruTrekkings.API.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly PeruTrekkingsDbContext dbContext;
-        public RegionsController(PeruTrekkingsDbContext dbContext)
+        private readonly IRegionReposity regionReposity;
+
+        public RegionsController(PeruTrekkingsDbContext dbContext, IRegionReposity regionReposity)
         {
             this.dbContext = dbContext;
+            this.regionReposity = regionReposity;
         }
 
         //GetAll 
@@ -26,7 +30,7 @@ namespace PeruTrekkings.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             //Get data from DB
-            var regionsDomain = await dbContext.Regions.ToListAsync();
+            var regionsDomain = await regionReposity.GetAllAsync();
             //Map Domain Models To DTOs
             var regionsDTO = new List<RegionDTO>();
             foreach (var region in regionsDomain)

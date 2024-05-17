@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PeruTrekkings.API.Data;
+using PeruTrekkings.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddDbContext<PeruTrekkingsDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("PeruTrekkingsConnectionString"))
     );
-
+builder.Services.AddScoped<IRegionReposity, SQLRegionReposity>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
