@@ -1,4 +1,5 @@
-﻿using PeruTrekkings.API.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PeruTrekkings.API.Data;
 using PeruTrekkings.API.Models.Domain;
 
 namespace PeruTrekkings.API.Repositories
@@ -17,6 +18,11 @@ namespace PeruTrekkings.API.Repositories
             await dbContext.Walks.AddAsync(walk);
             await dbContext.SaveChangesAsync();
             return walk;
+        }
+
+        public async Task<List<Walk>> GetAllAsync()
+        {
+            return await dbContext.Walks.ToListAsync();
         }
     }
 }

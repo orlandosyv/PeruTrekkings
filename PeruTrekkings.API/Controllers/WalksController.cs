@@ -31,5 +31,13 @@ namespace PeruTrekkings.API.Controllers
             //map domainModel to DTO
             return Ok(mapper.Map<WalkDto>(walkModel));
         }
+
+        //Get all Walks
+        [HttpGet]
+        public async Task<IActionResult> GetAll() {
+            var walksModel= await walkRepository.GetAllAsync();
+            //map
+            return Ok(mapper.Map<List<WalkDto>>(walksModel));
+        }
     }
 }
