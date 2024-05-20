@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using PeruTrekkings.API.Data;
 using PeruTrekkings.API.Models.Domain;
-using PeruTrekkings.API.Models.DTO;
+using PeruTrekkings.API.Models.DTO.RegionDTOs;
 using PeruTrekkings.API.Repositories;
 using System.Runtime.CompilerServices;
 

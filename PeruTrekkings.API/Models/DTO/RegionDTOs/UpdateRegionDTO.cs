@@ -1,4 +1,4 @@
-﻿namespace PeruTrekkings.API.Models.DTO
+﻿namespace PeruTrekkings.API.Models.DTO.RegionDTOs
 {
     public class UpdateRegionDTO
     {

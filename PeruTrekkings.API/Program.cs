@@ -16,7 +16,11 @@ builder.Services.AddDbContext<PeruTrekkingsDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("PeruTrekkingsConnectionString"))
     );
+//Inject repositories
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
+builder.Services.AddScoped<IWalkRepository, SqlWalkRepository>();
+
+//Map
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
