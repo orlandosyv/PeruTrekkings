@@ -28,11 +28,19 @@ namespace PeruTrekkings.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddWalkDTO addWalkDTO)
         {
-            var walkModel = mapper.Map<Walk>(addWalkDTO);
-            await walkRepository.CreateAsync(walkModel);
+            if (ModelState.IsValid)
+            {
+                var walkModel = mapper.Map<Walk>(addWalkDTO);
+                await walkRepository.CreateAsync(walkModel);
+                //map domainModel to DTO
+                return Ok(mapper.Map<WalkDto>(walkModel));
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
 
-            //map domainModel to DTO
-            return Ok(mapper.Map<WalkDto>(walkModel));
+           
         }
 
         //Get all Walks
@@ -59,14 +67,20 @@ namespace PeruTrekkings.API.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, UpdateWalkDto updateWalkDto) 
         {
-            //map updateWalk to DomModel
-            var walkDomModel = mapper.Map<Walk>(updateWalkDto);
-            walkDomModel= await walkRepository.UpdateAsync(id, walkDomModel);
-            
-             if(walkDomModel == null) { return NotFound(); }   
-             //map Model to dto
-            return Ok(mapper.Map<WalkDto>(walkDomModel));
-            
+            if (ModelState.IsValid)
+            {
+                //map updateWalk to DomModel
+                var walkDomModel = mapper.Map<Walk>(updateWalkDto);
+                walkDomModel = await walkRepository.UpdateAsync(id, walkDomModel);
+
+                if (walkDomModel == null) { return NotFound(); }
+                //map Model to dto
+                return Ok(mapper.Map<WalkDto>(walkDomModel));
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }           
         }
 
         //Delete
