@@ -20,6 +20,15 @@ namespace PeruTrekkings.API.Repositories
             return walk;
         }
 
+        public async Task<Walk?> DeleteAsync(Guid id)
+        {
+            var walkDB = await dbContext.Walks.FirstOrDefaultAsync(x => x.Id == id);
+            if (walkDB == null) { return null; }
+            dbContext.Walks.Remove(walkDB);
+            await dbContext.SaveChangesAsync();
+            return walkDB;
+        }
+
         public async Task<List<Walk>> GetAllAsync()
         {
             return await dbContext.Walks.Include(x => x.Difficulty).Include("Region").ToListAsync();
@@ -31,6 +40,23 @@ namespace PeruTrekkings.API.Repositories
                 .Include(x => x.Difficulty)
                 .Include("Region")
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<Walk?> UpdateAsync(Guid id, Walk walk)
+        {
+            var WalkDB = await dbContext.Walks.FirstOrDefaultAsync(x => x.Id == id);
+            if (WalkDB == null) { return null; }
+
+            //map
+            WalkDB.Name = walk.Name;            
+            WalkDB.LengthInKm = walk.LengthInKm;
+            WalkDB.Description = walk.Description;            
+            WalkDB.WalkImageUrl = walk.WalkImageUrl;
+            WalkDB.RegionId = walk.RegionId;
+            WalkDB.DifficultyId = walk.DifficultyId;
+
+            await dbContext.SaveChangesAsync();
+            return WalkDB;
         }
     }
 }

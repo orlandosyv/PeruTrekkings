@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PeruTrekkings.API.Models.Domain;
+using PeruTrekkings.API.Models.DTO.RegionDTOs;
 using PeruTrekkings.API.Models.DTO.WalkDTOs;
 using PeruTrekkings.API.Repositories;
 
@@ -51,6 +52,31 @@ namespace PeruTrekkings.API.Controllers
             if (WalkDomModel == null) { return NotFound(); }
             //map domainModel to DTO
             return Ok(mapper.Map<WalkDto>(WalkDomModel));
+        }
+
+        //Update PUT
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, UpdateWalkDto updateWalkDto) 
+        {
+            //map updateWalk to DomModel
+            var walkDomModel = mapper.Map<Walk>(updateWalkDto);
+            walkDomModel= await walkRepository.UpdateAsync(id, walkDomModel);
+            
+             if(walkDomModel == null) { return NotFound(); }   
+             //map Model to dto
+            return Ok(mapper.Map<WalkDto>(walkDomModel));
+            
+        }
+
+        //Delete
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Delete(Guid id) 
+        {
+            var walkModel = await walkRepository.DeleteAsync(id);
+            if (walkModel == null) { return NotFound(); }
+            return Accepted(mapper.Map<WalkDto>(walkModel));            
         }
     }
 }

@@ -17,7 +17,7 @@ namespace PeruTrekkings.API.Mappings
             CreateMap<AddWalkDTO, Walk>().ReverseMap();
             CreateMap<Walk, WalkDto>().ReverseMap();
             CreateMap<Difficulty, DifficultyDto>().ReverseMap();
-
+            CreateMap<UpdateWalkDto,Walk>().ReverseMap();
 
         }
     }
