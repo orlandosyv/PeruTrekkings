@@ -2,6 +2,7 @@
 using AutoMapper;
 using PeruTrekkings.API.Models.DTO.RegionDTOs;
 using PeruTrekkings.API.Models.DTO.WalkDTOs;
+using PeruTrekkings.API.Models.DTO;
 
 namespace PeruTrekkings.API.Mappings
 {
@@ -15,6 +16,7 @@ namespace PeruTrekkings.API.Mappings
             CreateMap<UpdateRegionDTO, Region>().ReverseMap();
             CreateMap<AddWalkDTO, Walk>().ReverseMap();
             CreateMap<Walk, WalkDto>().ReverseMap();
+            CreateMap<Difficulty, DifficultyDto>().ReverseMap();
 
 
         }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PeruTrekkings.API.Models.Domain;
 using PeruTrekkings.API.Models.DTO.WalkDTOs;
@@ -38,6 +40,17 @@ namespace PeruTrekkings.API.Controllers
             var walksModel= await walkRepository.GetAllAsync();
             //map
             return Ok(mapper.Map<List<WalkDto>>(walksModel));
+        }
+
+        //get by id
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            var WalkDomModel = await walkRepository.GetByIdAsync(id);
+            if (WalkDomModel == null) { return NotFound(); }
+            //map domainModel to DTO
+            return Ok(mapper.Map<WalkDto>(WalkDomModel));
         }
     }
 }
