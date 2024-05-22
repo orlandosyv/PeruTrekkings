@@ -37,9 +37,10 @@ namespace PeruTrekkings.API.Controllers
         }
 
         //Get all Walks
+        //GET: /api/walks?filterOn=Name&filterQuery=Track
         [HttpGet]
-        public async Task<IActionResult> GetAll() {
-            var walksModel= await walkRepository.GetAllAsync();
+        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery) {
+            var walksModel= await walkRepository.GetAllAsync(filterOn, filterQuery);
             //map
             return Ok(mapper.Map<List<WalkDto>>(walksModel));
         }
