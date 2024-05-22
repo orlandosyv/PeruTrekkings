@@ -30,7 +30,8 @@ namespace PeruTrekkings.API.Repositories
         }
 
         public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null,
-             string? sortBy = null, bool isAscending = true)
+             string? sortBy = null, bool isAscending = true,
+             int pageNumber = 1, int pageSize = 4)
         {
             var walks = dbContext.Walks.Include(x => x.Difficulty).Include("Region").AsQueryable();
             //filter
@@ -54,11 +55,13 @@ namespace PeruTrekkings.API.Repositories
                 {
                     walks = isAscending ? walks.OrderBy(x => x.LengthInKm) : walks.OrderByDescending(x => x.LengthInKm);
                 }
-
             }
 
-            return await walks.ToListAsync();
-            //return await dbContext.Walks.Include(x => x.Difficulty).Include("Region").ToListAsync();
+            //pagination
+            var skipResults = (pageNumber - 1) * pageSize;
+
+            return await walks.Skip(skipResults).Take(pageSize).ToListAsync();
+            
         }
 
         public async Task<Walk?> GetByIdAsync(Guid id)
