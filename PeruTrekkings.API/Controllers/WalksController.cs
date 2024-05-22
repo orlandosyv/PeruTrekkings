@@ -29,18 +29,24 @@ namespace PeruTrekkings.API.Controllers
         [HttpPost]
         [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddWalkDTO addWalkDTO)
-        {           
+        {
             var walkModel = mapper.Map<Walk>(addWalkDTO);
             await walkRepository.CreateAsync(walkModel);
             //map domainModel to DTO
-            return Ok(mapper.Map<WalkDto>(walkModel));           
+            return Ok(mapper.Map<WalkDto>(walkModel));
         }
 
         //Get all Walks
-        //GET: /api/walks?filterOn=Name&filterQuery=Track
+        //GET: /api/walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery) {
-            var walksModel= await walkRepository.GetAllAsync(filterOn, filterQuery);
+        public async Task<IActionResult> GetAll (
+            [FromQuery] string? filterOn, 
+            [FromQuery] string? filterQuery,
+            [FromQuery] string? sortBy,
+            [FromQuery] bool? isAscending
+            ) 
+        {
+            var walksModel= await walkRepository.GetAllAsync(filterOn, filterQuery,sortBy, isAscending ?? true);
             //map
             return Ok(mapper.Map<List<WalkDto>>(walksModel));
         }
