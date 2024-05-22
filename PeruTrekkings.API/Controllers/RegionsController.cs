@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using PeruTrekkings.API.CustomActionFilter;
 using PeruTrekkings.API.Data;
 using PeruTrekkings.API.Models.Domain;
 using PeruTrekkings.API.Models.DTO.RegionDTOs;
@@ -56,7 +57,7 @@ namespace PeruTrekkings.API.Controllers
         //Get single Region
         [HttpGet]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> GetById([FromRoute]Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var regionModel = await regionRepository.GetByIdAsync(id);
             if (regionModel == null) { return NotFound(); }
@@ -75,40 +76,32 @@ namespace PeruTrekkings.API.Controllers
 
         //Post to create a new region
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionDTO addRegionDTO)
-        {
-            if (ModelState.IsValid)
-            {
-                //Map or Convert DTO to model
-                var regionModel = mapper.Map<Region>(addRegionDTO);
-                //use Domain model to create region            
-                regionModel = await regionRepository.CreateAsync(regionModel);
-                //map           
-                var regionDTO = mapper.Map<RegionDTO>(regionModel);
-                return CreatedAtAction(nameof(GetById), new { id = regionModel.Id }, regionDTO);
-            } else { 
-                return BadRequest(ModelState);
-            }            
+        {            
+            //Map or Convert DTO to model
+            var regionModel = mapper.Map<Region>(addRegionDTO);
+            //use Domain model to create region            
+            regionModel = await regionRepository.CreateAsync(regionModel);
+            //map           
+            var regionDTO = mapper.Map<RegionDTO>(regionModel);
+            return CreatedAtAction(nameof(GetById), new { id = regionModel.Id }, regionDTO);         
         }
 
         //Update
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionDTO updateRegionDTO) 
-        {
-            if (ModelState.IsValid)
-            {
-                //Map region to DTO Model
-                var regionModel = mapper.Map<Region>(updateRegionDTO);
-                regionModel = await regionRepository.UpdateAsync(id, regionModel);
-                //var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
-                if (regionModel == null) { return NotFound(); }
-                //convert regionModel to regionDTO
-                var regionDTO = mapper.Map<RegionDTO>(regionModel);
-                return Ok(regionDTO);
-            } else {
-                return BadRequest(ModelState);
-            }            
+        {          
+            //Map region to DTO Model
+            var regionModel = mapper.Map<Region>(updateRegionDTO);
+            regionModel = await regionRepository.UpdateAsync(id, regionModel);
+            //var regionModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            if (regionModel == null) { return NotFound(); }
+            //convert regionModel to regionDTO
+            var regionDTO = mapper.Map<RegionDTO>(regionModel);
+            return Ok(regionDTO);      
         }
 
         //DELETE

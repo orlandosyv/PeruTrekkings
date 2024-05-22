@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using PeruTrekkings.API.CustomActionFilter;
 using PeruTrekkings.API.Models.Domain;
 using PeruTrekkings.API.Models.DTO.RegionDTOs;
 using PeruTrekkings.API.Models.DTO.WalkDTOs;
@@ -26,21 +27,13 @@ namespace PeruTrekkings.API.Controllers
 
         //Create walk
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddWalkDTO addWalkDTO)
-        {
-            if (ModelState.IsValid)
-            {
-                var walkModel = mapper.Map<Walk>(addWalkDTO);
-                await walkRepository.CreateAsync(walkModel);
-                //map domainModel to DTO
-                return Ok(mapper.Map<WalkDto>(walkModel));
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
-
-           
+        {           
+            var walkModel = mapper.Map<Walk>(addWalkDTO);
+            await walkRepository.CreateAsync(walkModel);
+            //map domainModel to DTO
+            return Ok(mapper.Map<WalkDto>(walkModel));           
         }
 
         //Get all Walks
@@ -65,22 +58,16 @@ namespace PeruTrekkings.API.Controllers
         //Update PUT
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, UpdateWalkDto updateWalkDto) 
-        {
-            if (ModelState.IsValid)
-            {
+        {           
                 //map updateWalk to DomModel
                 var walkDomModel = mapper.Map<Walk>(updateWalkDto);
                 walkDomModel = await walkRepository.UpdateAsync(id, walkDomModel);
 
                 if (walkDomModel == null) { return NotFound(); }
                 //map Model to dto
-                return Ok(mapper.Map<WalkDto>(walkDomModel));
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }           
+                return Ok(mapper.Map<WalkDto>(walkDomModel));             
         }
 
         //Delete
