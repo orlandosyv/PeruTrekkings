@@ -15,10 +15,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<PeruTrekkingsDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("PeruTrekkingsConnectionString"))
-    );
+builder.Services.AddDbContext<PeruTrekkingsDbContext>(options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("PeruTrekkingsConnectionString")) );
+builder.Services.AddDbContext<PeruTrekkingsAuthDbContext>(opt => opt.UseSqlServer(
+    builder.Configuration.GetConnectionString("PeruTrekkingsAuthConnectionString")));
 //Inject repositories
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SqlWalkRepository>();

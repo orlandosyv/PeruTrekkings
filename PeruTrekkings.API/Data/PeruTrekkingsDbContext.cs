@@ -6,7 +6,7 @@ namespace PeruTrekkings.API.Data
 {
     public class PeruTrekkingsDbContext : DbContext
     {
-        public PeruTrekkingsDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public PeruTrekkingsDbContext(DbContextOptions<PeruTrekkingsDbContext> dbContextOptions) : base(dbContextOptions)
         {
 
         }
