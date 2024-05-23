@@ -40,5 +40,24 @@ namespace PeruTrekkings.API.Controllers
             return BadRequest("Something went wrong");
         }
 
+        //Post: Api/auth/login
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginReqDto loginReqDto)
+        {
+            var user = await userManager.FindByEmailAsync(loginReqDto.Username);
+            if (user != null) {
+                var CheckPassword = await userManager.CheckPasswordAsync(user, loginReqDto.Password);
+                if (CheckPassword)
+                {
+                    //Create Token
+                    return Ok("Correct");
+                }
+            };
+            return BadRequest("username or pass incorrect.");
+
+
+        }
+
     }
 }
