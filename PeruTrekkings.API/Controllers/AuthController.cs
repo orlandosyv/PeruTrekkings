@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PeruTrekkings.API.Models.DTO;
+using PeruTrekkings.API.Repositories;
 
 namespace PeruTrekkings.API.Controllers
 {
@@ -10,10 +11,12 @@ namespace PeruTrekkings.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
+        private readonly ITokenRepository tokenRepository;
 
-        public AuthController(UserManager<IdentityUser> userManager)
+        public AuthController(UserManager<IdentityUser> userManager, ITokenRepository tokenRepository)
         {
             this.userManager = userManager;
+            this.tokenRepository = tokenRepository;
         }
 
         //Post: Api/auth/register
@@ -50,14 +53,18 @@ namespace PeruTrekkings.API.Controllers
                 var CheckPassword = await userManager.CheckPasswordAsync(user, loginReqDto.Password);
                 if (CheckPassword)
                 {
-                    //Create Token
-
-
-                    return Ok("Correct");
+                    //get Roles for this user
+                    var roles = await userManager.GetRolesAsync(user);
+                    if (roles != null)
+                    {
+                        //Create Token
+                        var jwtToken = tokenRepository.CreateJwtToken(user, roles.ToList());
+                        var response = new LoginResponseDto { JwtToken = jwtToken };                        
+                        return Ok(response);
+                    }                    
                 }
             };
             return BadRequest("username or pass incorrect.");
-
 
         }
 

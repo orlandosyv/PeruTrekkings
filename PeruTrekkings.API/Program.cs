@@ -6,6 +6,7 @@ using PeruTrekkings.API.Data;
 using PeruTrekkings.API.Mappings;
 using PeruTrekkings.API.Repositories;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,35 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options => 
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "PeTrekkings API", Version = "v1" });
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = JwtBearerDefaults.AuthenticationScheme
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = JwtBearerDefaults.AuthenticationScheme
+                },
+                Scheme = "Oauth2",
+                Name = JwtBearerDefaults.AuthenticationScheme,
+                In = ParameterLocation.Header
+            },
+                new List<string>()
+        }    
+    });
+});
 
 builder.Services.AddDbContext<PeruTrekkingsDbContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("PeruTrekkingsConnectionString")) );
@@ -23,6 +52,7 @@ builder.Services.AddDbContext<PeruTrekkingsAuthDbContext>(opt => opt.UseSqlServe
 //Inject repositories
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SqlWalkRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 //Map
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
@@ -30,7 +60,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 //Identity
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
-    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("PeruTrekkingsWalks")
+    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("PeruTrekkings")
     .AddEntityFrameworkStores<PeruTrekkingsAuthDbContext>()
     .AddDefaultTokenProviders();
 

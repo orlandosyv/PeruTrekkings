@@ -16,7 +16,7 @@ namespace PeruTrekkings.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    
     public class RegionsController : ControllerBase
     {
         private readonly PeruTrekkingsDbContext dbContext;
@@ -34,6 +34,7 @@ namespace PeruTrekkings.API.Controllers
         //GetAll 
         //GET: https://localhost:{portnumber}/api/regions
         [HttpGet]
+        [Authorize(Roles = "Writer, Reader")]
         public async Task<IActionResult> GetAll()
         {
             //Get data from DB
@@ -58,6 +59,7 @@ namespace PeruTrekkings.API.Controllers
 
         //Get single Region
         [HttpGet]
+        [Authorize(Roles = "Writer, Reader")]
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
@@ -79,6 +81,7 @@ namespace PeruTrekkings.API.Controllers
         //Post to create a new region
         [HttpPost]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionDTO addRegionDTO)
         {            
             //Map or Convert DTO to model
@@ -94,6 +97,7 @@ namespace PeruTrekkings.API.Controllers
         [HttpPut]
         [Route("{id:Guid}")]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionDTO updateRegionDTO) 
         {          
             //Map region to DTO Model
@@ -109,6 +113,7 @@ namespace PeruTrekkings.API.Controllers
         //DELETE
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute]Guid id) 
         {
             var regionModel = await regionRepository.DeleteAsync(id);
