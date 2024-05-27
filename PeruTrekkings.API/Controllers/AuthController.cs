@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PeruTrekkings.API.Models.DTO;
+using PeruTrekkings.API.Models.DTO.AuthenticationDTOs;
 using PeruTrekkings.API.Repositories;
 
 namespace PeruTrekkings.API.Controllers

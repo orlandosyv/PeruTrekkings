@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PeruTrekkings.API.Models.DTO
+namespace PeruTrekkings.API.Models.DTO.AuthenticationDTOs
 {
     public class RegisterRequestDto
     {

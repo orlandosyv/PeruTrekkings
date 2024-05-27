@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PeruTrekkings.API.Models.DTO
+namespace PeruTrekkings.API.Models.DTO.AuthenticationDTOs
 {
     public class LoginReqDto
     {
@@ -10,6 +10,6 @@ namespace PeruTrekkings.API.Models.DTO
 
         [Required]
         [DataType(DataType.Password)]
-        public string Password { get; set; }  
+        public string Password { get; set; }
     }
 }

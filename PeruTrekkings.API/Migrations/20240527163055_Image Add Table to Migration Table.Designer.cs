@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PeruTrekkings.API.Data;
 
@@ -11,9 +12,11 @@ using PeruTrekkings.API.Data;
 namespace PeruTrekkings.API.Migrations
 {
     [DbContext(typeof(PeruTrekkingsDbContext))]
-    partial class PeruTrekkingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240527163055_Image Add Table to Migration Table")]
+    partial class ImageAddTabletoMigrationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
