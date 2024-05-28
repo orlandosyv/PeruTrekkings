@@ -40,15 +40,31 @@ namespace PeruTrekkings.API.Controllers
         //[Authorize(Roles = "Writer, Reader")]
         public async Task<IActionResult> GetAll()
         {
-            logger.LogInformation("GetAll action method was invoked!");
+            try
+            {
+                //throw new Exception("This is a custom exception...");
+                //Get data from DB
+                var regionsDomain = await regionRepository.GetAllAsync();
+                //Map Domain Models To DTOs            
+                var regionsDTO = mapper.Map<List<RegionDTO>>(regionsDomain);
+                //Return DTO
+                logger.LogInformation($"Finished all request with Data: {JsonSerializer.Serialize(regionsDomain)}");
+                return Ok(regionsDTO);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+                throw;
+            }
+            
+            //logger.LogInformation("GetAll action method was invoked!");
+
+            //logger.LogWarning("This is a warning log");
+
+            //logger.LogError("This is a error log");
+
             //logger.LogDebug();
-            //Get data from DB
-            var regionsDomain = await regionRepository.GetAllAsync();
-            //Map Domain Models To DTOs            
-            var regionsDTO = mapper.Map<List<RegionDTO>>(regionsDomain);
-            //Return DTO
-            logger.LogInformation($"Finished all request with Data: {JsonSerializer.Serialize(regionsDomain)}");
-            return Ok(regionsDTO);
+           
         }
 
         //Get single Region

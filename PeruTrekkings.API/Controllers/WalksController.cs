@@ -9,6 +9,7 @@ using PeruTrekkings.API.Models.Domain;
 using PeruTrekkings.API.Models.DTO.RegionDTOs;
 using PeruTrekkings.API.Models.DTO.WalkDTOs;
 using PeruTrekkings.API.Repositories;
+using System.Net;
 
 namespace PeruTrekkings.API.Controllers
 {
@@ -43,11 +44,16 @@ namespace PeruTrekkings.API.Controllers
             [FromQuery] string? sortBy,[FromQuery] bool? isAscending,
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 4
             ) 
-        {
-            var walksModel= await walkRepository.GetAllAsync(filterOn, filterQuery,
-                sortBy, isAscending ?? true, pageNumber, pageSize);
+        {       
+            var walksModel = await walkRepository.GetAllAsync(filterOn, filterQuery,
+            sortBy, isAscending ?? true, pageNumber, pageSize);
+
+            //create a exception, to test our excep-handler
+            throw new Exception("Exception from Get Walks - testing exception");
+
+            
             //map
-            return Ok(mapper.Map<List<WalkDto>>(walksModel));
+            return Ok(mapper.Map<List<WalkDto>>(walksModel));          
         }
 
         //get by id
