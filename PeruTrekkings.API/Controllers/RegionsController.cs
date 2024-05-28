@@ -11,6 +11,7 @@ using PeruTrekkings.API.Models.Domain;
 using PeruTrekkings.API.Models.DTO.RegionDTOs;
 using PeruTrekkings.API.Repositories;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace PeruTrekkings.API.Controllers
 {
@@ -22,38 +23,31 @@ namespace PeruTrekkings.API.Controllers
         private readonly PeruTrekkingsDbContext dbContext;
         private readonly IRegionRepository regionRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<RegionsController> logger;
 
         public RegionsController(PeruTrekkingsDbContext dbContext, IRegionRepository regionReposity,
-            IMapper mapper)
+            IMapper mapper, ILogger<RegionsController> logger)
         {
             this.dbContext = dbContext;
             this.regionRepository = regionReposity;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         //GetAll 
         //GET: https://localhost:{portnumber}/api/regions
         [HttpGet]
-        [Authorize(Roles = "Writer, Reader")]
+        //[Authorize(Roles = "Writer, Reader")]
         public async Task<IActionResult> GetAll()
         {
+            logger.LogInformation("GetAll action method was invoked!");
+            //logger.LogDebug();
             //Get data from DB
             var regionsDomain = await regionRepository.GetAllAsync();
-            //Map Domain Models To DTOs
-
-            //var regionsDTO = new List<RegionDTO>();
-            //foreach (var region in regionsDomain)
-            //{
-            //    regionsDTO.Add(new RegionDTO()
-            //    {
-            //        Id = region.Id,
-            //        Name = region.Name,
-            //        Code = region.Code,
-            //        RegionImageUrl = region.RegionImageUrl,
-            //    });
-            //}
+            //Map Domain Models To DTOs            
             var regionsDTO = mapper.Map<List<RegionDTO>>(regionsDomain);
             //Return DTO
+            logger.LogInformation($"Finished all request with Data: {JsonSerializer.Serialize(regionsDomain)}");
             return Ok(regionsDTO);
         }
 
@@ -176,3 +170,15 @@ namespace PeruTrekkings.API.Controllers
 //    Code = regionModel.Code,
 //    RegionImageUrl = regionModel.RegionImageUrl,
 //};
+
+//var regionsDTO = new List<RegionDTO>();
+//foreach (var region in regionsDomain)
+//{
+//    regionsDTO.Add(new RegionDTO()
+//    {
+//        Id = region.Id,
+//        Name = region.Name,
+//        Code = region.Code,
+//        RegionImageUrl = region.RegionImageUrl,
+//    });
+//}
