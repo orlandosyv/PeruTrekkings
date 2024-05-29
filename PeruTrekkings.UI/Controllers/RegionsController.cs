@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PeruTrekkings.UI.Models.DTO;
 
 namespace PeruTrekkings.UI.Controllers
 {
@@ -11,8 +12,11 @@ namespace PeruTrekkings.UI.Controllers
             this.httpClientFactory = httpClientFactory;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
+            List<RegionDto> response = new List<RegionDto>();
+
             try
             {
                 //Get all Regions from WebAPI
@@ -22,9 +26,9 @@ namespace PeruTrekkings.UI.Controllers
 
                 httpResponseMessage.EnsureSuccessStatusCode(); //check status
 
-                var stringResponseBody =  await httpResponseMessage.Content.ReadAsStringAsync();
+                response.AddRange(await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<RegionDto>>());
 
-                ViewBag.Response = stringResponseBody;
+                //ViewBag.Response = stringResponseBody;
             }
             catch (Exception)
             {
@@ -33,7 +37,7 @@ namespace PeruTrekkings.UI.Controllers
 
 
 
-            return View();
+            return View(response);
         }
     }
 }
