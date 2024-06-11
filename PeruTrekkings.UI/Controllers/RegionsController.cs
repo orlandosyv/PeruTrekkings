@@ -113,5 +113,23 @@ namespace PeruTrekkings.UI.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(RegionDto requestRegion)
+        {
+            try
+            {
+                var client = httpClientFactory.CreateClient();
+                var httpResponseMessage = await client.DeleteAsync($"https://localhost:7153/api/regions/{requestRegion.Id}");
+                httpResponseMessage.EnsureSuccessStatusCode();
+                return RedirectToAction("Index", "Regions");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);               
+            }
+
+            return View("Edit");
+        }
+
     }
 }
