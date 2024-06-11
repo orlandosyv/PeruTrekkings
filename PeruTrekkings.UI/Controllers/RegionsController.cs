@@ -3,6 +3,7 @@ using PeruTrekkings.UI.Models;
 using PeruTrekkings.UI.Models.DTO;
 using System.Text.Json;
 using System.Text;
+using System.Reflection;
 
 namespace PeruTrekkings.UI.Controllers
 {
@@ -85,9 +86,31 @@ namespace PeruTrekkings.UI.Controllers
             if (response is not null)
             {
                 return View(response);
-            }
-            
+            }            
             return View(null);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(RegionDto requestRegion)
+        {
+            var client = httpClientFactory.CreateClient();
+            var httpRequestMessage = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"https://localhost:7153/api/regions/{requestRegion.Id}"),
+                Content = new StringContent(JsonSerializer.Serialize(requestRegion), Encoding.UTF8, "application/json")
+            };
+            var httpResponseMessage = await client.SendAsync(httpRequestMessage);
+
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            var response = await httpResponseMessage.Content.ReadFromJsonAsync<RegionDto>();
+            if (response is not null)
+            {
+                return RedirectToAction("Edit", "Regions");
+            }
+
+            return View();
         }
 
     }
