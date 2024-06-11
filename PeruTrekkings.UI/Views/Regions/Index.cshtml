@@ -11,27 +11,31 @@
     <a class="btn btn-secondary" asp-controller="Regions" asp-action="Add">Add Region</a>
 </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Code</th>
-            <th>Name</th>
-            <th> </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var walk in Model)
-        {
+<div class="container m-2">
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@walk.Id</td>
-                <td>@walk.Code</td>
-                <td>@walk.Name</td>
-                <td>
-                    <a asp-controller="Regions" asp-action="Edit" asp-route-id="@walk.Id"
-                       class="btn btn-light">Edit</a>
-                </td>
+                <th>Id</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th> </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var walk in Model)
+            {
+                <tr>
+                    <td>@walk.Id</td>
+                    <td>@walk.Code</td>
+                    <td>@walk.Name</td>
+                    <td>
+                        <a asp-controller="Regions" asp-action="Edit" asp-route-id="@walk.Id"
+                           class="btn btn-info">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+

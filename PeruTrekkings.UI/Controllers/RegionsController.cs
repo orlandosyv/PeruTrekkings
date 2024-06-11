@@ -74,6 +74,20 @@ namespace PeruTrekkings.UI.Controllers
             }
 
             return View();
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var client = httpClientFactory.CreateClient();
+            var  response = await client.GetFromJsonAsync<RegionDto>($"https://localhost:7153/api/regions/{id.ToString()}");
+            if (response is not null)
+            {
+                return View(response);
+            }
+            
+            return View(null);
         }
 
     }
